@@ -22,8 +22,7 @@ struct Delayed_Start {
 } delayed_start;
 
 bool delayed_start_done = false;
-int delayed_start_duration_s =
-    100;  // 100 seconds sleep, before sending mqtt-packages
+long delayed_start_duration_s = 100;  // 100 seconds sleep, before sending mqtt-packages
 time_t start_time_t0_s;
 
 // --- sensirion sen5x struct ---
@@ -127,6 +126,11 @@ int16_t get_sensor_data(Sen5x* sen5x) {
 int16_t send_mqtt_msg(Sen5x* sen5x) {
 
     if (!delayed_start_done) {
+
+        printf("\nt0: %ld \n",start_time_t0_s);
+        printf("\ndelay_s: %ld \n",delayed_start_duration_s);
+        printf("\nTime/now: %ld \n",time(NULL));
+
         if (start_time_t0_s + delayed_start_duration_s > time(NULL) ||
             time(NULL) - start_time_t0_s >
                 delayed_start_duration_s +
@@ -134,6 +138,7 @@ int16_t send_mqtt_msg(Sen5x* sen5x) {
                           // than stop waiting
 
             delayed_start_done = true;
+            printf("\nStart sending mqtt messages.\n");
         }
     }
     if (!delayed_start_done) {
@@ -375,8 +380,7 @@ float get_absolute_hum_g_m3(float temp, float rel_hum) {
 
 //-----------------------------------------------------------------------------
 
-//===---  main
-//---=============================================================
+//===---  main  ---============================================================
 
 int main(int argc, char* argv[]) {
 
@@ -419,7 +423,9 @@ int main(int argc, char* argv[]) {
 
     delayed_start_done = false;
     delayed_start_duration_s = 100;
+
     start_time_t0_s = time(NULL);
+    printf("\nt0: %ld \n",start_time_t0_s);
 
     //-----------------------------------------------------------------------------
 
