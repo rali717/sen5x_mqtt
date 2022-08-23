@@ -21,6 +21,11 @@ struct Delayed_Start {
     time_t seconds_now;
 } delayed_start;
 
+bool delayed_start_done = false;
+int delayed_start_duration_s =
+    100;  // 100 seconds sleep, before sending mqtt-packages
+time_t start_time_t0_s;
+
 // --- sensirion sen5x struct ---
 typedef struct {
     unsigned char product_name[32];
@@ -43,6 +48,7 @@ typedef struct {
     float ambient_temperature;
     float voc_index;
     float nox_index;
+    float hum_abs;
     unsigned char tagname[256];
 } Sen5x;
 
@@ -61,8 +67,8 @@ const char jsonstring_pm4p0[] = ",\"mass_concentration_pm4p0\":";
 const char jsonstring_pm10p0[] = ",\"mass_concentration_pm10p0\":";
 const char jsonstring_voc[] = ",\"voc_index\":";
 const char jsonstring_nox[] = ",\"nox_index\":";
+const char jsonstring_hum_abs[] = ",\"hum_abs_g_m3\":";
 const char jsonstring_End[] = "}\0";
-
 
 int16_t get_sensor_data(Sen5x* sen5x) {
 
@@ -106,6 +112,11 @@ int16_t get_sensor_data(Sen5x* sen5x) {
         } else {
             printf("Nox index: %.1f\n", sen5x->nox_index);
         }
+        if (isnan(sen5x->hum_abs)) {
+            printf("Humidity absolute  g/m3: n/a\n");
+        } else {
+            printf("Humidity absolute  g/m3: %.1f\n", sen5x->hum_abs);
+        }
     }
     return error;
 }
@@ -115,6 +126,20 @@ int16_t get_sensor_data(Sen5x* sen5x) {
 // MQTT
 int16_t send_mqtt_msg(Sen5x* sen5x) {
 
+    if (!delayed_start_done) {
+        if (start_time_t0_s + delayed_start_duration_s > time(NULL) ||
+            time(NULL) - start_time_t0_s >
+                delayed_start_duration_s +
+                    1) {  // if time was set to new time (timediff too high),
+                          // than stop waiting
+
+            delayed_start_done = true;
+        }
+    }
+    if (!delayed_start_done) {
+        return;
+    }
+
     // if (!delayed_start.done) {
     //     delayed_start.seconds_now = time(NULL);
     //     if (delayed_start.seconds_now >=
@@ -123,11 +148,14 @@ int16_t send_mqtt_msg(Sen5x* sen5x) {
     //         // ||
     //         //     delayed_start.seconds_now - delayed_start.seconds_t0 >
     //         //         delayed_start.delay_s + 1  // if time was changed,
-    //         //     || delayed_start.seconds_t0 - delayed_start.seconds_now >
-    //         //            delayed_start.delay_s + 1  // stop delaying mqtt
+    //         //     || delayed_start.seconds_t0 -
+    //         delayed_start.seconds_now >
+    //         //            delayed_start.delay_s + 1  // stop delaying
+    //         mqtt
     //         {
     //             delayed_start.done = true;
-    //             printf("\nSen5x: delayed mqtt-start done  ( %i seconds).",
+    //             printf("\nSen5x: delayed mqtt-start done  ( %i
+    //             seconds).",
     //                    delayed_start.delay_s);
     //         }
     //     if (!delayed_start.done) {
@@ -163,10 +191,10 @@ int16_t send_mqtt_msg(Sen5x* sen5x) {
 
     // --- Building mqtt-json-string ---
     strcpy(jsonstring, jsonstring_Start);  // Json-Start + product_name ...
-    strcat(jsonstring, (char *) sen5x->product_name);
+    strcat(jsonstring, (char*)sen5x->product_name);
 
     strcat(jsonstring, jsonstring_serial_number);
-    strcat(jsonstring, (char *) sen5x->serial_number);
+    strcat(jsonstring, (char*)sen5x->serial_number);
 
     strcat(jsonstring, jsonstring_hardware);
     sprintf(string1, "%u", sen5x->hardware_major);
@@ -190,7 +218,7 @@ int16_t send_mqtt_msg(Sen5x* sen5x) {
     strcat(jsonstring, string1);
 
     strcat(jsonstring, jsonstring_tagname);
-    strcat(jsonstring, (char *)sen5x->tagname);
+    strcat(jsonstring, (char*)sen5x->tagname);
 
     strcat(jsonstring, jsonstring_temp_c);
     sprintf(string1, "%.2f", sen5x->ambient_temperature);  // temp
@@ -223,6 +251,12 @@ int16_t send_mqtt_msg(Sen5x* sen5x) {
     if (!isnan(sen5x->nox_index)) {
         strcat(jsonstring, jsonstring_nox);  // nox_index
         sprintf(temp_string, "%.1f", sen5x->nox_index);
+        strcat(jsonstring, temp_string);
+    }
+
+    if (!isnan(sen5x->hum_abs)) {
+        strcat(jsonstring, jsonstring_hum_abs);  // humidity absolut in g/m3
+        sprintf(temp_string, "%.1f", sen5x->hum_abs);
         strcat(jsonstring, temp_string);
     }
 
@@ -325,8 +359,24 @@ void parse_args(int argc, char* argv[]) {
         printf(argv[i]);
     }
 }
+//-----------------------------------------------------------------------------
 
-//===---  main ---=============================================================
+float get_absolute_hum_g_m3(float temp, float rel_hum) {
+    float abs_hum = NAN;
+
+    // https://carnotcycle.wordpress.com/2012/08/04/how-to-convert-relative-humidity-to-absolute-humidity/
+
+    abs_hum = (float)((6.112 * exp(((17.67 * temp) / (243.5 + temp))) *
+                       rel_hum * 2.1674) /
+                      (273.15 + temp));
+
+    return abs_hum;
+}
+
+//-----------------------------------------------------------------------------
+
+//===---  main
+//---=============================================================
 
 int main(int argc, char* argv[]) {
 
@@ -367,6 +417,10 @@ int main(int argc, char* argv[]) {
         180;  // In the first 180 seconds - no mqtt message send
     delayed_start.seconds_t0 = time(NULL);
 
+    delayed_start_done = false;
+    delayed_start_duration_s = 100;
+    start_time_t0_s = time(NULL);
+
     //-----------------------------------------------------------------------------
 
     Sen5x sen54;
@@ -374,7 +428,7 @@ int main(int argc, char* argv[]) {
     sen54.serial_number_size = 32;
     sen54.temp_offset = 0.0f;
 
-    strcpy((char *) sen54.tagname, (char *) "No comment\0");
+    strcpy((char*)sen54.tagname, (char*)"No comment\0");
 
     int16_t error = 0;
 
@@ -394,6 +448,8 @@ int main(int argc, char* argv[]) {
                 printf("\n\nFailt getting sensordata\n");
                 break;
             }
+            sen54.hum_abs = get_absolute_hum_g_m3(sen54.ambient_temperature,
+                                                  sen54.ambient_humidity);
             error = send_mqtt_msg(&sen54);
             // send via mqtt
         } while (!error);
