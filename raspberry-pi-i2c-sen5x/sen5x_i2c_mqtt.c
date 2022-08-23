@@ -131,10 +131,9 @@ int16_t send_mqtt_msg(Sen5x* sen5x) {
         printf("\ndelay_s: %ld \n",delayed_start_duration_s);
         printf("\nTime/now: %ld \n",time(NULL));
 
-        if (start_time_t0_s + delayed_start_duration_s > time(NULL) ||
-            time(NULL) - start_time_t0_s >
-                delayed_start_duration_s +
-                    1) {  // if time was set to new time (timediff too high),
+        if (start_time_t0_s + delayed_start_duration_s > time(NULL) 
+       //     ||  time(NULL) - start_time_t0_s > delayed_start_duration_s + 1
+            ) {  // if time was set to new time (timediff too high),
                           // than stop waiting
 
             delayed_start_done = true;
