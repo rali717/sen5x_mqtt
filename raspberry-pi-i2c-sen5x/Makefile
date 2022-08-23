@@ -4,7 +4,7 @@ sen5x_sources = sen5x_i2c.h sen5x_i2c.c
 
 i2c_implementation ?= sensirion_i2c_hal.c
 CC = gcc
-CFLAGS = -Os -Wall -fstrict-aliasing -Wstrict-aliasing=1 -Wsign-conversion -fPIC -I. -lm
+CFLAGS = -Os -Wall -fstrict-aliasing -Wstrict-aliasing=1 -Wsign-conversion -fPIC -I. 
 
 ifdef CI
     CFLAGS += -Werror
@@ -18,7 +18,7 @@ all: sen5x_i2c_mqtt
 sen5x_i2c_mqtt: clean
 # sen5x_i2c_example_usage: clean
 	$(CC) $(CFLAGS) -o $@  ${sen5x_sources} ${i2c_sources} \
-		${i2c_implementation} ${common_sources} sen5x_i2c_mqtt.c -lmosquitto
+		${i2c_implementation} ${common_sources} sen5x_i2c_mqtt.c -lmosquitto -lm
 #		${i2c_implementation} ${common_sources} sen5x_i2c_example_usage.c 
 
 
