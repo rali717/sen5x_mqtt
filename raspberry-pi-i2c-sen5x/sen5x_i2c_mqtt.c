@@ -124,6 +124,7 @@ int16_t get_sensor_data(Sen5x* sen5x) {
 
 // MQTT
 int16_t send_mqtt_msg(Sen5x* sen5x) {
+printf("\ndelayed_start_done: %d",delayed_start_done);
 
     if (!delayed_start_done) {
 
