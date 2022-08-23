@@ -4,7 +4,7 @@ sen5x_sources = sen5x_i2c.h sen5x_i2c.c
 
 i2c_implementation ?= sensirion_i2c_hal.c
 CC = gcc
-CFLAGS = -Os -Wall -fstrict-aliasing -Wstrict-aliasing=1 -Wsign-conversion -fPIC -I.
+CFLAGS = -Os -Wall -fstrict-aliasing -Wstrict-aliasing=1 -Wsign-conversion -fPIC -I. -lm
 
 ifdef CI
     CFLAGS += -Werror

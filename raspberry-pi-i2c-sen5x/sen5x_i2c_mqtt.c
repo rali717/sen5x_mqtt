@@ -137,7 +137,7 @@ int16_t send_mqtt_msg(Sen5x* sen5x) {
         }
     }
     if (!delayed_start_done) {
-        return;
+        return 0;
     }
 
     // if (!delayed_start.done) {
