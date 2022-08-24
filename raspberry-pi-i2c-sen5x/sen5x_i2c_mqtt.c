@@ -132,7 +132,10 @@ printf("\ndelayed_start_done: %d",delayed_start_done);
         printf("\ndelay_s: %ld \n",delayed_start_duration_s);
         printf("\nTime/now: %ld \n",time(NULL));
 
-        if (((long) start_time_t0_s + delayed_start_duration_s) > ((long) time(NULL)) 
+
+        
+
+        if (((long) time(NULL)) > ((long) start_time_t0_s + delayed_start_duration_s)  
        //     ||  time(NULL) - start_time_t0_s > delayed_start_duration_s + 1
             ) {  // if time was set to new time (timediff too high),
                           // than stop waiting
