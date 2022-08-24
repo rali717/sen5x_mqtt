@@ -22,7 +22,7 @@ struct Delayed_Start {
 } delayed_start;
 
 bool delayed_start_done = false;
-long delayed_start_duration_s = 240;  // 240 seconds sleep, before sending mqtt-packages
+long delayed_start_duration_s = 300;  // 240 seconds sleep, before sending mqtt-packages
 time_t start_time_t0_s;
 
 // --- sensirion sen5x struct ---
