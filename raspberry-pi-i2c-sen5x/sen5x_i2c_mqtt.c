@@ -264,7 +264,7 @@ printf("\ndelayed_start_done: %d",delayed_start_done);
 
     if (!isnan(sen5x->hum_abs)) {
         strcat(jsonstring, jsonstring_hum_abs);  // humidity absolut in g/m3
-        sprintf(temp_string, "%.1f", sen5x->hum_abs);
+        sprintf(temp_string, "%.2f", sen5x->hum_abs);
         strcat(jsonstring, temp_string);
     }
 
