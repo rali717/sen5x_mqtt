@@ -423,10 +423,15 @@ int main(int argc, char* argv[]) {
 
     // Parsing args into variables
     for (int i = 2; i + 1 > argc; i = i + 2) {
-        if (argv[i] == "--help" || argv[i] == "-h") {
-            print_help();
-            return 0;
-        };
+
+        if (strcmp( argv[i], "--help") == 0){print_help; return 0;}
+        if (strcmp( argv[i], "-h") == 0){print_help; return 0;}
+
+        // if (argv[i] == "--help" || argv[i] == "-h") {
+        //     print_help();
+        //     return 0;
+        // };
+        
         if (argv[i] == "--mqtt_broker_ip") {
             strcpy(mqtt_broker_ip, argv[i + 1]);
         };
