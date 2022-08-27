@@ -13,12 +13,12 @@
 
 //-----------------------------------------------------------------------------
 int main(int argc, char* argv[]);
-uint32_t rest_time_us;
-char mqtt_broker_ip[100];
-int mqtt_port;
-char mqtt_topic[255];
-char mqtt_username[64];
-char mqtt_password[64];
+//uint32_t rest_time_us;
+//char mqtt_broker_ip[100];
+//int mqtt_port;
+//char mqtt_topic[255];
+//char mqtt_username[64];
+//char mqtt_password[64];
 // float temp_offset;
 
 // struct Delayed_Start {
@@ -27,6 +27,19 @@ char mqtt_password[64];
 //     time_t seconds_t0;
 //     time_t seconds_now;
 // } delayed_start;
+
+
+//--- Configuration ---
+typedef struct {
+    uint32_t rest_time_us;
+    char mqtt_broker[100];
+    int mqtt_port;
+    char mqtt_username[100];
+    char mqtt_password[100];
+    int mqtt_start_delay_s;
+    char mqtt_topic[255];
+} Conf;
+
 
 bool delayed_start_done = false;
 long delayed_start_duration_s = 300;
@@ -77,10 +90,10 @@ const char jsonstring_nox[] = ",\"nox_index\":";
 const char jsonstring_hum_abs[] = ",\"hum_abs_g_m3\":";
 const char jsonstring_End[] = "}\0";
 
-int16_t get_sensor_data(Sen5x* sen5x) {
+int16_t get_sensor_data(Sen5x* sen5x, Conf* conf) {
 
     // sensirion_i2c_hal_sleep_usec(10000000);  // 10s
-    sensirion_i2c_hal_sleep_usec(rest_time_us);  // 10s
+    sensirion_i2c_hal_sleep_usec(conf->rest_time_us);  // 10s
 
     int16_t error = sen5x_read_measured_values(
         &(sen5x->mass_concentration_pm1p0), &(sen5x->mass_concentration_pm2p5),
@@ -133,7 +146,7 @@ int16_t get_sensor_data(Sen5x* sen5x) {
 //=========================================================================
 
 // MQTT
-int16_t send_mqtt_msg(Sen5x* sen5x) {
+int16_t send_mqtt_msg(Sen5x* sen5x, Conf* conf) {
     printf("\ndelayed_start_done: %d", delayed_start_done);
 
     if (!delayed_start_done) {
@@ -168,11 +181,11 @@ int16_t send_mqtt_msg(Sen5x* sen5x) {
 
     mosq = mosquitto_new("publisher-test", true, NULL);
 
-    mosquitto_username_pw_set(mosq, mqtt_username,
-                              mqtt_password);  // "admin","password");
+    mosquitto_username_pw_set(mosq, conf->mqtt_username,
+                              conf->mqtt_password);  // "admin","password");
 
     // rc = mosquitto_connect(mosq, "localhost", 1883, 60);
-    rc = mosquitto_connect(mosq, mqtt_broker_ip, mqtt_port, 60);
+    rc = mosquitto_connect(mosq, conf->mqtt_broker, conf->mqtt_port, 60);
 
     if (rc != 0) {
         printf("Client could not connect to broker! Error Code: %d\n", rc);
@@ -257,14 +270,14 @@ int16_t send_mqtt_msg(Sen5x* sen5x) {
 
     strcat(jsonstring, jsonstring_End);
 
-    printf(jsonstring);
+    printf("%s", jsonstring);
     printf("\n");
 
     // mosquitto_publish(mosq, NULL, "sensors/sen54",
     // strlen((size_t)jsonstring),
     //                   jsonstring, 0, false);
 
-    mosquitto_publish(mosq, NULL, mqtt_topic, strlen((size_t)jsonstring),
+    mosquitto_publish(mosq, NULL, conf->mqtt_topic, strlen((char*) &jsonstring),
                       jsonstring, 0, false);
 
     mosquitto_disconnect(mosq);
@@ -355,7 +368,7 @@ int setup_sen5x(Sen5x* sen5x) {
 
 void parse_args(int argc, char* argv[]) {
     for (int i = 0; i <= argc; i++) {
-        printf(argv[i]);
+        printf("%s", argv[i]);
     }
 }
 //-----------------------------------------------------------------------------
@@ -377,7 +390,7 @@ float get_absolute_hum_g_m3(float temp, float rel_hum) {
 void print_help() {
     printf("\n\nParameters and default values:");
     printf("\n  -h\n --help");
-    printf("\n --mqtt_broker_ip \"localhost\"");
+    printf("\n --mqtt_broker \"localhost\"");
     printf("\n --mqtt_port 1833");
     printf("\n --mqtt_topic sensors/sen54");
     printf("\n --username user");
@@ -388,18 +401,18 @@ void print_help() {
     printf("\n --tagname\n");
 }
 
-void print_settings() {
+void print_settings(Sen5x sen5x) {
     printf("\n\nProgramm settings:");
 
-    printf("\n --mqtt_broker_ip \"localhost\"");
+    printf("\n --mqtt_broker  %s", "\"localhost\"");
     printf("\n --mqtt_port 1833");
     printf("\n --mqtt_topic sensors/sen54");
     printf("\n --username user");
     printf("\n --password password");
 
     printf("\n --rest_time_us\n");
-    printf("\n --temp_offset\n");
-    printf("\n --tagname\n");
+    printf("\n --temp_offset  %.2f", sen5x.temp_offset);
+    printf("\n --tagname  %s", sen5x.tagname);
 }
 //===---  main  ---============================================================
 
@@ -412,13 +425,25 @@ int main(int argc, char* argv[]) {
     sen54.serial_number_size = 32;
     sen54.temp_offset = 0.0f;
 
-    uint32_t rest_time_us = 10000000;  // 10s
-    char mqtt_broker_ip[100] = {"localhost"};
-    int mqtt_port = 1833;
-    char mqtt_username[100] = {""};
-    char mqtt_password[100] = {""};
-    int mqtt_start_delay_s = 0;
-    char mqtt_topic[255] = {"sensors/sen54"};
+
+
+    Conf conf;
+    strcpy((char*)conf.mqtt_broker, (char*)"localhost");
+    conf.mqtt_port=1833;
+    strcpy((char*)conf.mqtt_topic, (char*)"sensors/sen54");
+    strcpy((char*)conf.mqtt_username, (char*)"");
+    strcpy((char*)conf.mqtt_password, (char*)"");
+    conf.mqtt_start_delay_s = 0;
+    conf.rest_time_us=10000000; //10s (10 x 1000 x 1000)
+
+
+    // uint32_t rest_time_us = 10000000;  // 10s
+    // char mqtt_broker_ip[100] = {"localhost"};
+    // int mqtt_port = 1833;
+    // char mqtt_username[100] = {""};
+    // char mqtt_password[100] = {""};
+    // int mqtt_start_delay_s = 0;
+    // char mqtt_topic[255] = {"sensors/sen54"};
 
     strcpy((char*)sen54.tagname, (char*)"No comment\0");
 
@@ -450,24 +475,24 @@ int main(int argc, char* argv[]) {
             return 0;
         }
 
-        if (strcmp(argv[i], "--mqtt_broker_ip") == 0) {
-            strcpy(mqtt_broker_ip, argv[i + 1]);
+        if (strcmp(argv[i], "--mqtt_broker") == 0) {
+            strcpy(conf.mqtt_broker, argv[i + 1]);
         };
 
         if (strcmp(argv[i], "--mqtt_port") == 0) {
-            mqtt_port = atoi(argv[i + 1]);
+            conf.mqtt_port = atoi(argv[i + 1]);
         };
 
         if (strcmp(argv[i], "--mqtt_username") == 0) { 
-            strcpy(mqtt_username, argv[i + 1]);
+            strcpy(conf.mqtt_username, argv[i + 1]);
         };
 
         if (strcmp(argv[i], "--mqtt_password") == 0) { 
-            strcpy(mqtt_password, argv[i + 1]);
+            strcpy(conf.mqtt_password, argv[i + 1]);
         };
 
         if (strcmp(argv[i], "--rest_time_s") == 0) { 
-            rest_time_us = atoi(argv[i + 1]);
+            conf.rest_time_us = atoi(argv[i + 1]);
         };
 
 
@@ -476,7 +501,7 @@ int main(int argc, char* argv[]) {
         };
 
         if (strcmp(argv[i], "--mqtt_topic") == 0) {
-            strcpy((char*)mqtt_topic, (char*)argv[i + 1]);
+            strcpy((char*)conf.mqtt_topic, (char*)argv[i + 1]);
         };
 
         if (strcmp(argv[i], "--temp_offset") == 0) {
@@ -485,7 +510,7 @@ int main(int argc, char* argv[]) {
         //
     }
 
-    print_settings();
+    print_settings(sen54);
 
     // struct Delayed_Start delayed_start;
     //  delayed_start.done = false;
@@ -521,14 +546,14 @@ int main(int argc, char* argv[]) {
 
         do {
             error = get_sensor_data(
-                &sen54);  // get new sensor-data // Read Measurement
+                &sen54, &conf);  // get new sensor-data // Read Measurement
             if (error) {
                 printf("\n\nFailt getting sensordata\n");
                 break;
             }
             sen54.hum_abs = get_absolute_hum_g_m3(sen54.ambient_temperature,
                                                   sen54.ambient_humidity);
-            error = send_mqtt_msg(&sen54);
+            error = send_mqtt_msg(&sen54, &conf);
             // send via mqtt
         } while (!error);
 
