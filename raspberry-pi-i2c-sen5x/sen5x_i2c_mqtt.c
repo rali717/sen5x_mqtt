@@ -19,8 +19,7 @@ int mqtt_port;
 char mqtt_topic[255];
 char mqtt_username[64];
 char mqtt_password[64];
-//float temp_offset;
-
+// float temp_offset;
 
 // struct Delayed_Start {
 //     bool done;
@@ -30,7 +29,7 @@ char mqtt_password[64];
 // } delayed_start;
 
 bool delayed_start_done = false;
-long delayed_start_duration_s =  300;  
+long delayed_start_duration_s = 300;
 // 240 seconds sleep, before sending mqtt-packages
 time_t start_time_t0_s;
 
@@ -169,7 +168,8 @@ int16_t send_mqtt_msg(Sen5x* sen5x) {
 
     mosq = mosquitto_new("publisher-test", true, NULL);
 
-    mosquitto_username_pw_set(mosq, mqtt_username, mqtt_password); // "admin","password");
+    mosquitto_username_pw_set(mosq, mqtt_username,
+                              mqtt_password);  // "admin","password");
 
     // rc = mosquitto_connect(mosq, "localhost", 1883, 60);
     rc = mosquitto_connect(mosq, mqtt_broker_ip, mqtt_port, 60);
@@ -260,7 +260,8 @@ int16_t send_mqtt_msg(Sen5x* sen5x) {
     printf(jsonstring);
     printf("\n");
 
-    // mosquitto_publish(mosq, NULL, "sensors/sen54", strlen((size_t)jsonstring),
+    // mosquitto_publish(mosq, NULL, "sensors/sen54",
+    // strlen((size_t)jsonstring),
     //                   jsonstring, 0, false);
 
     mosquitto_publish(mosq, NULL, mqtt_topic, strlen((size_t)jsonstring),
@@ -387,9 +388,9 @@ void print_help() {
     printf("\n --tagname\n");
 }
 
-void print_settings(){
+void print_settings() {
     printf("\n\nProgramm settings:");
-    
+
     printf("\n --mqtt_broker_ip \"localhost\"");
     printf("\n --mqtt_port 1833");
     printf("\n --mqtt_topic sensors/sen54");
@@ -417,54 +418,80 @@ int main(int argc, char* argv[]) {
     char mqtt_username[100] = {""};
     char mqtt_password[100] = {""};
     int mqtt_start_delay_s = 0;
-    char mqtt_topic[255]={"sensors/sen54"};
+    char mqtt_topic[255] = {"sensors/sen54"};
 
     strcpy((char*)sen54.tagname, (char*)"No comment\0");
 
+    if (argc > 1) {
+        if (strcmp(argv[1], "-h") == 0) {
+            printf("\n1 -h\n");
+            print_help();
+            return 0;
+        }
+        if (strcmp(argv[1], "--help") == 0) {
+               printf("\n1 --help\n");
+            print_help();
+            return 0;
+        }
+    }
+
     // Parsing args into variables
-    for (int i = 2; i + 1 > argc; i = i + 2) {
+    for (int i = 1; argc > (i + 1); i = i + 2) {
 
-        if (strcmp( argv[i], "--help") == 0){print_help; return 0;}
-        if (strcmp( argv[i], "-h") == 0){print_help; return 0;}
+        if (strcmp(argv[i], "--help") == 0) {
+            printf("\n2 --help\n");
+            print_help();
+            return 0;
+        }
 
-        // if (argv[i] == "--help" || argv[i] == "-h") {
-        //     print_help();
-        //     return 0;
-        // };
-        
-        if (argv[i] == "--mqtt_broker_ip") {
+        if (strcmp(argv[i], "-h") == 0) {
+            printf("\n2 -h\n");
+            print_help();
+            return 0;
+        }
+
+        if (strcmp(argv[i], "--mqtt_broker_ip") == 0) {
             strcpy(mqtt_broker_ip, argv[i + 1]);
         };
-        if (argv[i] == "--mqtt_port") {
+
+        if (strcmp(argv[i], "--mqtt_port") == 0) {
             mqtt_port = atoi(argv[i + 1]);
         };
-        if (argv[i] == "--mqtt_username") {
+
+        if (strcmp(argv[i], "--mqtt_username") == 0) { 
             strcpy(mqtt_username, argv[i + 1]);
         };
-        if (argv[i] == "--mqtt_password") {
+
+        if (strcmp(argv[i], "--mqtt_password") == 0) { 
             strcpy(mqtt_password, argv[i + 1]);
         };
-        if (argv[i] == "--rest_time_s") {
+
+        if (strcmp(argv[i], "--rest_time_s") == 0) { 
             rest_time_us = atoi(argv[i + 1]);
         };
-        if (argv[i] == "--tagname") {
+
+
+        if (strcmp(argv[i], "--tagname") == 0) { 
             strcpy((char*)sen54.tagname, (char*)argv[i + 1]);
         };
-        if (argv[i] == "--mqtt_topic") {
+
+        if (strcmp(argv[i], "--mqtt_topic") == 0) {
             strcpy((char*)mqtt_topic, (char*)argv[i + 1]);
         };
-        if (argv[i] == "--temp_offset") {
-            sen54.temp_offset=atof(argv[i + 1]);
+
+        if (strcmp(argv[i], "--temp_offset") == 0) {
+            sen54.temp_offset = atof(argv[i + 1]);
         };
         //
     }
 
+    print_settings();
 
     // struct Delayed_Start delayed_start;
-  //  delayed_start.done = false;
-  //  delayed_start.delay_s =
-  //      180;  // In the first 180 seconds - no mqtt message send
- //  delayed_start.seconds_t0 = time(NULL);
+    //  delayed_start.done = false;
+    //  delayed_start.delay_s =
+    //      180;  // In the first 180 seconds - no mqtt message send
+    //  delayed_start.seconds_t0 = time(NULL);
 
     delayed_start_done = false;
     delayed_start_duration_s = 100;
