@@ -541,8 +541,13 @@ int main(int argc, char* argv[]) {
             printf("Error executing sen5x_stop_measurement(): %i\n", error);
         }
 
-        sleep(5);
-        printf("\n\nRestart sen5x.\n\n");
+        do {
+            printf("\n\nRestart sen5x.\n\n");
+            sleep(5);
+            error = setup_sen5x(&sen54);
+        } while (error);
+        
+        
     }
     return 1;
 }
