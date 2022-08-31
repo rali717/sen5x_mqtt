@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Mon Aug 15 22:17:34 2022
+# Make data base, printed on Wed Aug 31 21:12:39 2022
 
 # Variables
 
@@ -37,13 +37,13 @@ QT_ACCESSIBILITY = 1
 # environment
 SNAP_INSTANCE_NAME = code
 # environment
-GDK_PIXBUF_MODULEDIR = /snap/code/104/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders
+GDK_PIXBUF_MODULEDIR = /snap/code/105/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders
 # environment
 VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # default
 .VARIABLES := 
 # environment
-PWD = /home/user/rabu/git_copy/git
+PWD = /home/user/git/sen5x_mqtt
 # automatic
 %D = $(patsubst %/,%,$(dir $%))
 # environment
@@ -55,7 +55,7 @@ XDG_DATA_DIRS = /usr/share/plasma:/usr/local/share:/usr/share:/var/lib/snapd/des
 # automatic
 %F = $(notdir $%)
 # environment
-VSCODE_CODE_CACHE_PATH = /home/user/.config/Code/CachedData/6d9b74a70ca9c7733b29f0456fd8195364076dda
+VSCODE_CODE_CACHE_PATH = /home/user/.config/Code/CachedData/e4503b30fc78200f846c62cf8091b76ff5547662
 # environment
 XDG_SESSION_PATH = /org/freedesktop/DisplayManager/Session1
 # environment
@@ -71,9 +71,9 @@ XAUTHORITY = /home/user/.Xauthority
 # makefile
 MAKEFLAGS = pqrR
 # makefile
-CURDIR := /home/user/rabu/git_copy/git
+CURDIR := /home/user/git/sen5x_mqtt
 # environment
-APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
 # environment
 LESSOPEN = | /usr/bin/lesspipe %s
 # automatic
@@ -83,7 +83,7 @@ PAM_KWALLET5_LOGIN = /run/user/1000/kwallet5.socket
 # environment
 MFLAGS = -pqrR
 # environment
-SSH_AUTH_SOCK = /tmp/ssh-XXXXXX2sGnYj/agent.1600
+SSH_AUTH_SOCK = /tmp/ssh-XXXXXXZBHP9E/agent.1564
 # default
 .SHELLFLAGS := -c
 # environment
@@ -101,7 +101,7 @@ SNAP_REEXEC =
 # automatic
 @F = $(notdir $@)
 # environment
-VSCODE_PID = 10724
+VSCODE_PID = 7770
 # environment
 XDG_SESSION_TYPE = x11
 # automatic
@@ -109,7 +109,7 @@ XDG_SESSION_TYPE = x11
 # environment
 BAMF_DESKTOP_FILE_HINT = /var/lib/snapd/desktop/applications/code_code.desktop
 # environment
-SESSION_MANAGER = local/x1:@/tmp/.ICE-unix/1874,unix/x1:/tmp/.ICE-unix/1874
+SESSION_MANAGER = local/x1:@/tmp/.ICE-unix/1840,unix/x1:/tmp/.ICE-unix/1840
 # automatic
 *F = $(notdir $*)
 # environment
@@ -153,11 +153,11 @@ SNAP_USER_COMMON = /home/user/snap/code/common
 # environment
 LC_TIME = de_DE.UTF-8
 # environment
-SNAP = /snap/code/104
+SNAP = /snap/code/105
 # environment
 KICAD6_FOOTPRINT_DIR = /usr/lib/kicad-nightly/share/kicad/modules/
 # environment
-SNAP_REVISION = 104
+SNAP_REVISION = 105
 # environment
 SNAP_REAL_HOME = /home/user
 # environment
@@ -195,7 +195,7 @@ XDG_VTNR = 1
 # makefile
 .DEFAULT_GOAL := 
 # environment
-SYSTEMD_EXEC_PID = 1577
+SYSTEMD_EXEC_PID = 1541
 # environment
 DISPLAY = :0
 # environment
@@ -207,15 +207,15 @@ KDE_SESSION_UID = 1000
 # environment
 DISABLE_WAYLAND = 1
 # environment
-SNAP_DATA = /var/snap/code/104
+SNAP_DATA = /var/snap/code/105
 # environment
 SNAP_CONTEXT = sIePiElFye3RuQAozlx6HInNHjRIy5Xg2HorvRJ_rWVqT-GCkQlR
 # environment
 LC_MEASUREMENT = de_DE.UTF-8
 # environment
-SSH_AGENT_PID = 1731
+SSH_AGENT_PID = 1695
 # environment
-_ = /snap/code/104/usr/share/code/code
+_ = /snap/code/105/usr/share/code/code
 # environment
 LC_PAPER = de_DE.UTF-8
 # environment
@@ -235,11 +235,11 @@ HOME = /home/user
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # environment
-VSCODE_IPC_HOOK = /run/user/1000/vscode-16068fa4-1.70.1-main.sock
+VSCODE_IPC_HOOK = /run/user/1000/vscode-16068fa4-1.70.2-main.sock
 # environment
 SNAP_NAME = code
 # environment
-GSETTINGS_SCHEMA_DIR = /snap/code/104/usr/share/glib-2.0/schemas
+GSETTINGS_SCHEMA_DIR = /snap/code/105/usr/share/glib-2.0/schemas
 # environment
 XDG_SESSION_ID = 3
 # environment
@@ -251,7 +251,7 @@ IM_CONFIG_PHASE = 1
 # automatic
 <F = $(notdir $<)
 # environment
-SNAP_VERSION = 6d9b74a7
+SNAP_VERSION = e4503b30
 # default
 SUFFIXES := 
 # environment
@@ -269,7 +269,7 @@ KDE_SESSION_VERSION = 5
 # environment
 KDE_FULL_SESSION = true
 # environment
-SNAP_USER_DATA = /home/user/snap/code/104
+SNAP_USER_DATA = /home/user/snap/code/105
 # environment
 DOTNET_ROOT = /usr/lib/dotnet/dotnet6-6.0.108
 # environment
@@ -286,7 +286,7 @@ SNAP_LIBRARY_PATH = /var/lib/snapd/lib/gl:/var/lib/snapd/lib/gl32:/var/lib/snapd
 
 # Directories
 
-# . (device 66310, inode 43125735): 6 files, no impossibilities.
+# . (device 66310, inode 4983751): 6 files, no impossibilities.
 
 # 6 files, no impossibilities in 1 directories.
 
@@ -338,12 +338,12 @@ GNUmakefile:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 14 / storage = 152 B / avg = 10 B
-# current buf: size = 8162 B / used = 152 B / count = 14 / avg = 10 B
+# strcache buffers: 1 (0) / strings = 14 / storage = 136 B / avg = 9 B
+# current buf: size = 8162 B / used = 136 B / count = 14 / avg = 9 B
 
 # strcache performance: lookups = 17 / hit rate = 17%
 # hash-table stats:
 # Load=14/8192=0%, Rehash=0, Collisions=0/17=0%
-# Finished Make data base on Mon Aug 15 22:17:34 2022
+# Finished Make data base on Wed Aug 31 21:12:39 2022
 
  

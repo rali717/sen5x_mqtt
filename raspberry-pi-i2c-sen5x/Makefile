@@ -13,12 +13,12 @@ endif
 .PHONY: all clean
 
 # all: sen5x_i2c_example_usage
-all: sen5x_i2c_mqtt 
+all: sen5x_mqtt 
 
 sen5x_i2c_mqtt: clean
 # sen5x_i2c_example_usage: clean
 	$(CC) $(CFLAGS) -o $@  ${sen5x_sources} ${i2c_sources} \
-		${i2c_implementation} ${common_sources} sen5x_i2c_mqtt.c -lmosquitto -lm
+		${i2c_implementation} ${common_sources} sen5x_mqtt.c -lmosquitto -lm
 #		${i2c_implementation} ${common_sources} sen5x_i2c_example_usage.c 
 
 
@@ -27,5 +27,5 @@ mqtt_pub: clean
 			
 clean:
 #	$(RM) sen5x_i2c_example_usage
-	$(RM) sen5x_i2c_mqtt
+	$(RM) sen5x_mqtt
 	$(RM) mqtt_pub
