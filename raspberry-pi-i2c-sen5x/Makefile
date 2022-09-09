@@ -2,7 +2,12 @@ common_sources = sensirion_config.h sensirion_common.h sensirion_common.c
 i2c_sources = sensirion_i2c_hal.h sensirion_i2c.h sensirion_i2c.c
 sen5x_sources = sen5x_i2c.h sen5x_i2c.c
 
+common_objects = sensirion_common.o
+i2c_objects = sensirion_i2c.o
+sen5x_objects = sen5x_i2c.o
+
 i2c_implementation ?= sensirion_i2c_hal.c
+
 CC = gcc
 CFLAGS = -Os -Wall -fstrict-aliasing -Wstrict-aliasing=1 -Wsign-conversion -fPIC -I. 
 
@@ -11,17 +16,19 @@ ifdef CI
 endif
 
 .PHONY: all clean
-
+ 
 # all: sen5x_i2c_example_usage
 all: sen5x_mqtt 
 
 sen5x_mqtt: clean
 # sen5x_i2c_example_usage: clean
-	$(CC) $(CFLAGS) -o $@  ${sen5x_sources} ${i2c_sources} \
-		${i2c_implementation} ${common_sources} sen5x_mqtt.c -lmosquitto -lm
+	$(CC) -c -g $(CFLAGS)   ${sen5x_sources} ${i2c_sources} \
+		${i2c_implementation} ${common_sources} sen5x_mqtt.c -lmosquitto -lm 
 #		${i2c_implementation} ${common_sources} sen5x_i2c_example_usage.c 
 
+	$(CC)  $(CFLAGS) -g -o  sen5x_mqtt  sensirion_common.o sensirion_i2c.o sen5x_i2c.o sen5x_mqtt.o sensirion_i2c_hal.o -lmosquitto -lm 
 
+		 
 mqtt_pub: clean
 	$(CC) $(CFLAGS) -o $@  mqtt_pub.c
 			
